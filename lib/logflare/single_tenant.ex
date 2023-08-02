@@ -233,13 +233,15 @@ defmodule Logflare.SingleTenant do
 
       tasks =
         for source <- sources do
-          Task.async(fn ->
-            source = Sources.refresh_source_metrics_for_ingest(source)
-            Logger.info("Updating schemas for for #{source.name}")
-            event = read_ingest_sample_json(source.name)
-            log_event = LogEvent.make(event, %{source: source})
-            Schema.update(source.token, log_event)
-          end)
+          unless postgres_backend?() do
+            Task.async(fn ->
+              source = Sources.refresh_source_metrics_for_ingest(source)
+              Logger.info("Updating schemas for for #{source.name}")
+              event = read_ingest_sample_json(source.name)
+              log_event = LogEvent.make(event, %{source: source})
+              Schema.update(source.token, log_event)
+            end)
+          end
         end
 
       Task.await_many(tasks)
