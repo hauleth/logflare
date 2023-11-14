@@ -194,7 +194,10 @@ defmodule Logflare.Mixfile do
 
       # alerts feature
       {:citrine, "~> 0.1.0"},
-      {:crontab, "~> 1.1"}
+      {:crontab, "~> 1.1"},
+
+      # macOS FS fix
+      {:file_system, "~> 1.0", override: true, only: [:dev, :test]}
     ]
   end
 
